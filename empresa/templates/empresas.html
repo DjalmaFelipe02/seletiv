@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load tabela_color %}
+
+{% block 'head' %}
+    
+    <link rel="stylesheet" href="{% static 'empresa/css/empresas.css' %}">
+
+{% endblock%}
+
+{% block 'body' %}
+
+    <div class="wrapper">
+        <div class="box"> 
+            <div class="header-box">
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <section class="alert {{message.tags}}">
+                            {{message}}
+                        </section>
+                    {% endfor %}
+                {% endif %}
+
+                <h2 class="titulo">Gerenciar empresas</h2>
+                <a class="btn-nova-empresa" href="{% url 'nova_empresa'%}">Nova empresa</a>
+            </div>
+            <div class="borda-box"></div>
+            <div class="body-box">
+            
+                <form action= "{% url 'empresas'%}" method='GET'> {% csrf_token %}
+                <div class="row">
+                    
+                        <div class="col-md-5">
+                            <input type="text" placeholder="Busque pelo nome" class="form-control" name="nome">
+                        </div>
+
+                        <div class="col-md-4">
+                            <select class="form-select" name="tecnologias">
+
+                                {% for tech in tecnologias %}
+
+                                <option value="{{tech.id}}">{{tech}}</option>
+
+                                {% endfor %}
+
+                            </select>
+                        </div>
+                    
+                    <div class="col-md-3">
+                        <input type="submit" value="FILTRAR" class="btn btn-lg btn-orange">
+                    </div>
+                </div>
+                </form>
+
+                <table class="tabela" cellpadding="20">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Endereço</th>
+                        <th>Tecnologias usadas</th>
+                        <th>Quantidade de vagas</th>
+                        <th>Ação</th>
+                    </tr>
+
+                    {% for empresa in empresas%}
+
+                        <tr {% if not forloop.counter|is_par %} class="tabela-linha"{% endif %} >
+                            <td>
+                                <a href="{% url 'empresa_unica' empresa.id %}">{{empresa.nome}}</a>
+                            </td>
+                            <td>{{empresa.endereco}}</td>
+                            <td>
+                                <select class="form-select">  
+                                    {% for tech in empresa.tecnologias.all %}     
+                                    <option>{{tech}}</option>
+                                    {% endfor %}                    
+                                </select>
+                            </td>
+                            <td>
+                                {% if empresa.quantidade_vagas > 0  %}
+                                    <img src ={% static 'empresa/img/flag_green.png' %}></img>
+
+                                {% else %}
+                                    <img src ={% static 'empresa/img/flag_red.png' %}></img>
+
+                                {% endif %}
+
+                                {{empresa.quantidade_vagas}}
+                            </td>
+                            <td>
+                                <a class="btn-excluir" href="{% url 'excluir_empresa' empresa.id %}">Excluir empresa</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+
+            
+
+        </div>
+    </div>
+
+{% endblock%}
