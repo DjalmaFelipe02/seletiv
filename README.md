@@ -1,0 +1,2 @@
+# seletiv
+Django Project
